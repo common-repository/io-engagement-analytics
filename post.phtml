@@ -1,0 +1,101 @@
+<?php if ( ! defined( 'ABSPATH' ) ) exit; ?>
+<div class="wrap io-dashboard">
+  <h1>
+    <?=htmlspecialchars($post->post_title)?>
+  </h1>
+  <form method="post" id="period-selector">
+    <select name="period" class="postform" onchange="this.form.submit()">
+      <?php foreach ( ['today', 'week', 'month'] as $p ) { ?>
+    	  <option <?=$period == $p ? 'selected' : ''?>><?=$p?></option>
+    	<?php } ?>
+    </select>
+  </form>
+  <a href="<?php menu_page_url( 'io/dashboard.php' ) ?>&period=<?=$period?>">Top articles</a> |
+  <a href="/wp-admin/post.php?post=<?=$post->ID?>&action=edit">Edit article</a>
+  <br/><br/>
+  
+  <table class="io-overview">
+    <tr>
+      <td>
+        <div class="postbox figure">
+          <div class="inside">
+          	<div class="main total_article_views" data-value="<?=$summary['total_article_views']?>">
+          	  <b><?=$summary['total_article_views']?></b>
+              Article Views
+          	</div>
+          </div>
+        </div>
+      </td>
+      <td>
+        <div class="postbox figure">
+          <div class="inside">
+          	<div class="main started_reading" data-value="<?=$summary['started_reading']?>">
+          	  <b><?=$summary['started_reading']?>%</b>
+              Started Reading
+          	</div>
+          </div>
+        </div>
+      </td>
+      <td>
+        <div class="postbox figure">
+          <div class="inside">
+          	<div class="main finished_reading" data-value="<?=$summary['finished_reading']?>">
+          	  <b><?=$summary['finished_reading']?>%</b>
+              Finished reading
+          	</div>
+          </div>
+        </div>
+      </td>
+    </tr>
+  </table>
+  
+  <?php
+  
+  $labels = [
+    'start' => 'started reading',
+    'quarter' => 'read to 1/4th',
+    'half' => 'read half of the article',
+    'tquarter' => 'read to 3/4th',
+    'end' => 'finished reading',
+  ];
+  
+  ?>
+  
+  <div class="postbox io-funnel">
+    <div class="inside">
+    	<div class="main">
+    	  <table>
+    	    <tr>
+    	      <td class="io-read-funnel">
+    	        <?php foreach ( ['start', 'quarter', 'half', 'tquarter', 'end'] as $step ) { ?>
+    	          <?php $value = round(100*$funnel['views_' . $step]/$funnel['views']); ?>
+    	          <div class="io-funnel-<?=$step?> <?=io_funnel_step_class($value, $step)?>"
+    	             style="width:<?=80*$funnel['views_' . $step]/$funnel['views_start']?>%"></div>
+      	        <label class="io-funnel-<?=$step?>-label">
+      	          <span class="engagement <?=io_funnel_step_class($value, $step)?>">
+      	            <?=io_funnel_step_comment($value, $step)?>
+      	          </span>
+      	          <br/><br/>
+      	          
+      	          <b><?=$value?>%</b>
+      	          <?=$funnel['views_' . $step]?> out of <?=$funnel['views']?>
+      	          <br/>
+      	          <?=$labels[$step]?>
+      	          
+      	          <?php if ( $step != 'end' ) { ?>
+      	            <em></em>
+      	            <i></i>
+      	          <?php } ?>
+      	        </label>
+    	        <?php } ?>
+    	      </td>
+    	      <td class="io-content">
+    	        <div class="out"><div class="in"><?= get_the_content(null, false, $post)?></div></div>
+    	      </td>
+    	    </tr>
+    	  </table>
+      </div>
+    </div>
+  </div>
+  
+</div>

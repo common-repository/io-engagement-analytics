@@ -1,0 +1,33 @@
+<?php if ( ! defined( 'ABSPATH' ) ) exit; ?>
+<div class="wrap io-dashboard">
+  <h1>Google Analytics</h1>
+  <br/>
+  <a class="button" href="https://analytics.google.com/analytics/web/" target="_blank">Launch Google Analytics</a>
+  <br/><br/>
+  
+  <?php if ( $updated ) { ?>
+    <div id="setting-error-settings_updated" class="notice notice-success settings-error"> 
+      <p><strong>GA tracking ID updated, now you can use it.</strong></p>
+    </div>
+  <?php } ?>
+  
+  <form method="post">
+    <h4>Configure and activate GA</h4>
+    <ol>
+      <li>Sign up for <a href="https://analytics.google.com/analytics/web/" target="_blank">Google Analytics</a> (short GA).</li>
+      <li><a href="https://support.google.com/analytics/answer/1042508?hl=en" target="_blank">Add new website</a> (property) in GA interface.</li>
+      <li>
+        Get your tracking code, copy tracking ID and paste it here:
+        <input value="<?php echo htmlspecialchars(get_option('io-ga-id')); ?>" type="text" name="ga_id" placeholder="UA-12345...." />
+        <img class="io-ga-id" src="<?php echo plugin_dir_url( __FILE__ ) . 'gaid.jpg'; ?>">
+      </li>
+      <li>
+        <button class="button">Save changes</button>
+      </li>
+      <li>
+        <a href="https://analytics.google.com/analytics/web/" target="_blank">Launch Google Analytics</a> and start analyzing your users.
+      </li>
+    </ol>
+  </form>
+  
+</div>

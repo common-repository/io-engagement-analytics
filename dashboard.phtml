@@ -1,0 +1,152 @@
+<?php if ( ! defined( 'ABSPATH' ) ) exit; ?>
+<div class="wrap io-dashboard">
+  <h1>Audience engagement</h1>
+  <form method="post" id="period-selector">
+    <select name="period" class="postform" onchange="io_change_period(this.value)">
+      <?php foreach ( ['today', 'week', 'month'] as $p ) { ?>
+    	  <option <?=$period == $p ? 'selected' : ''?>><?=$p?></option>
+    	<?php } ?>
+    </select>
+    <script>
+      // Change period from selector
+      function io_change_period(period) {
+        if ( location.href.indexOf('period') > 0 ) {
+          location = location.href.replace(/period=[^&]+/, 'period=' + period);
+        }
+        else {
+          location = location.href + '&period=' + period;
+        }
+        
+        console.log(location.href + '&period=' + period);
+      }
+    </script>
+  </form>
+  <br/>
+  
+  <table class="io-overview">
+    <tr>
+      <td>
+        <div class="postbox figure">
+          <div class="inside">
+          	<div class="main total_views" data-value="<?=$summary['total_views']?>">
+          	  <b><?=$summary['total_views']?></b>
+              Total blog views
+          	</div>
+          </div>
+        </div>
+      </td>
+      <td>
+        <div class="postbox figure">
+          <div class="inside">
+          	<div class="main total_article_views" data-value="<?=$summary['total_article_views']?>">
+          	  <b><?=$summary['total_article_views']?></b>
+              Article Views
+          	</div>
+          </div>
+        </div>
+      </td>
+      <td>
+        <div class="postbox figure">
+          <div class="inside">
+          	<div class="main started_reading" data-value="<?=$summary['started_reading']?>">
+          	  <b><?=$summary['started_reading']?>%</b>
+              Started Reading
+          	</div>
+          </div>
+        </div>
+      </td>
+      <td>
+        <div class="postbox figure">
+          <div class="inside">
+          	<div class="main finished_reading" data-value="<?=$summary['finished_reading']?>">
+          	  <b><?=$summary['finished_reading']?>%</b>
+              Finished reading
+          	</div>
+          </div>
+        </div>
+      </td>
+    </tr>
+  </table>
+  
+  <table class="io-chart">
+    <tr>
+      <?php foreach ( $chart as $bar ) { ?>
+        <td
+          class="<?=$bar['now'] ? 'now' : ''?>"
+          data-views="<?=$bar['views']?>"
+          data-article_views="<?=$bar['article_views']?>"
+          data-started_reading="<?=$bar['started']?>"
+          data-finished_reading="<?=$bar['finished']?>"
+          onmouseover="io_chart_preview(this)"
+          onmouseout="io_chart_unpreview(this)"
+        >
+          <?php if ( $bar['total'] ) { ?>
+          <div class="total" style="height: <?=$bar['total']?>%">
+            <div class="started" style="height: <?=$bar['started']?>%">
+              <div class="finished" style="height: <?=$bar['finished']?>%"></div>
+            </div>
+          </div>
+          <?php } ?>
+        </td>
+      <?php } ?>
+    </tr>
+    <tr>
+      <?php foreach ( $chart as $bar ) { ?>
+        <th class="<?=$bar['future'] ? 'future' : ''?> <?=$bar['now'] ? 'now' : ''?>">
+          <em><?=$bar['date']?></em>
+        </th>
+      <?php } ?>
+    </tr>
+  </table>
+  <br/>
+  
+  <div class="postbox">
+    <div class="inside">
+      <table class="io-scoreboard">
+        <?php if ( $articles ) { ?>
+          <tr>
+            <th class="title">Article</th>
+            <th>Views</th>
+            <th>Started Reading</th>
+            <th>1/4</th>
+            <th>1/2</th>
+            <th>3/4</th>
+            <th>Finished Reading</th>
+          </tr>
+        <?php } ?>
+        <?php foreach ( $articles as $article ) { ?>
+          <tr>
+            <td class="title">
+              <a href="<?php menu_page_url( 'io/dashboard.php' ) ?>&p=<?=$article['post_id']?>&period=<?=$period?>">
+                <?=$article['title']?>
+              </a>
+            </td>
+            <td><?=number_format($article['views'], 0, '.', ' ')?></td>
+            
+            <?php foreach (['start', 'quarter', 'half', 'tquarter', 'end'] as $step) { ?>
+              <?php
+                $value = round(100*$article['views_' . $step]/($article['views']?:1));
+              ?>
+              <td>
+                <b class="<?=io_funnel_step_class($value, $step)?>"><?=$value?>%</b>
+                <?php if ( $step != 'start' ) { ?>
+                  <i></i>
+                  <em></em>
+                <?php } ?>
+              </td>
+            <?php } ?>
+          </tr>
+        <?php } ?>
+      </table>
+      
+      <?php if ( !$articles ) { ?>
+        <p class="io-waiting">
+          Waiting for first readers for the selected period...
+          <br/>
+          Please come back a little later.
+        </p>
+      <?php } ?>
+    </div>
+  </div>
+  
+</div>
